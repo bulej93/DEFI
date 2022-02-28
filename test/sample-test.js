@@ -54,16 +54,15 @@ describe('farming tokens', function(){
     const TokenFarm = await ethers.getContractFactory("TokenFarm")
     const farm = await TokenFarm.deploy(dapp.address, dai.address)
 
-    await dai.transfer(account2.address, 5000)
-
-    await dai.approve(farm.address, 50)
-    account2Bal = await dai.balanceOf(account1.address)
-    console.log(account2Bal.toNumber())
+    await dai.connect(account1).transfer(account2.address, 5000)
     
+    await dai.connect(account2).approve(farm.address, 5000)
+    await farm.connect(account2).stakeTokens(5000)
 
+    expect(await dai.balanceOf(account2.address)).to.equal(0)
+    expect(await dai.balanceOf(farm.address)).to.equal(5000)
+    expect(await farm.isStaking(account2.address)).to.equal(true)
     
-    //await farm.stakeTokens(100, account2)
-  
 
   })
 })
