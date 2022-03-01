@@ -43,7 +43,7 @@ describe('Dapp Token deployment', function(){
 describe('farming tokens', function(){
   it('rewards Investors', async function(){
 
-    const [account1, account2] = await ethers.getSigners()
+    const [account1, account2, account3] = await ethers.getSigners()
     const DaiToken = await ethers.getContractFactory("DaiToken")
     const dai = await DaiToken.deploy()
 
@@ -58,11 +58,21 @@ describe('farming tokens', function(){
     
     await dai.connect(account2).approve(farm.address, 5000)
     await farm.connect(account2).stakeTokens(5000)
+    
 
     expect(await dai.balanceOf(account2.address)).to.equal(0)
     expect(await dai.balanceOf(farm.address)).to.equal(5000)
     expect(await farm.isStaking(account2.address)).to.equal(true)
-    
+    expect(await farm.hasStaked(account2.address)).to.equal(true)
+
+   try {
+    await farm.connect(account1).issueTokens(dapp.connect(account1).transfer(account2.address, 5000 ))
+   } catch (error) {
+     console.log('this is the error ' + error)
+   }
+    expect( await dapp.balanceOf(account2.address)).to.equal(5000)
+
+    expect(farm.connect(account2).issueTokens()).to.be.revertedWith('not the owner')
 
   })
 })
