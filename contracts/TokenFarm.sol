@@ -39,6 +39,8 @@ contract TokenFarm {
         hasStaked[msg.sender] = true;
     }
 
+    
+
     function issueTokens () public {
         require(msg.sender == owner, 'caller must be the owner');
         for (uint i = 0; i < stakers.length; i++) {
@@ -49,6 +51,15 @@ contract TokenFarm {
             } 
             
         }
+    }
+
+    function unstakeTokens() public {
+        uint balance = stakingBalance[msg.sender];
+        require(balance > 0 , 'balance cannot be less than 0 ');
+        daiToken.transfer(msg.sender, balance);
+        stakingBalance[msg.sender] = 0;
+        isStaking[msg.sender] = false;
+
     }
 
 }

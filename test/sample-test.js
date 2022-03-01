@@ -72,7 +72,26 @@ describe('farming tokens', function(){
    }
     expect( await dapp.balanceOf(account2.address)).to.equal(5000)
 
-    expect(farm.connect(account2).issueTokens()).to.be.revertedWith('not the owner')
+
+
+   // expect(farm.connect(account2).issueTokens()).to.be.revertedWith('not the owner')
+
+    
+    try {
+      await farm.connect(account2).unstakeTokens(dai.connect(account1).transfer(account2.address, 0))
+      
+    } catch (error) {
+      console.log('the unstake err '+ error)
+    }
+
+    const daibal = await dai.balanceOf(account1.address)
+    const dappbal = await dapp.balanceOf(account2.address)
+
+    console.log('dai bal ' + daibal )
+    console.log('dapp bal ' + dappbal )
+
+    
+    // expect(await dai.balanceOf(account2.address)).to.equal(5000, 'not the right balance')
 
   })
 })
